@@ -21,6 +21,7 @@ class _StatsState extends State<Stats> {
   List<Map<String, dynamic>> cpuArray = [];
   List<Map<String, dynamic>> memoryArray = [];
   List<Map<String, dynamic>> fpsArray = [];
+  bool isInfoReady = true;
 
   @override
   void initState() {
@@ -97,6 +98,9 @@ class _StatsState extends State<Stats> {
                             headers: {'Authorization': "Basic " + base64Encode(utf8.encode("MSIAfterburner:17cc95b4017d496f82"))});
     List<dynamic> list = convertResponseToList(response.body);
     createInfoJson(list);
+    setState(() {
+      isInfoReady = false;
+    });
     return response;
   }
 
@@ -112,34 +116,49 @@ class _StatsState extends State<Stats> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context).accentColor,
+                size: 34,
+              ),
+              onPressed: () => {
+                Navigator.of(context).pop()
+              },
+            )
+          ],
         ),
         body: Container(
           height: double.maxFinite,
           color: Theme.of(context).primaryColor,
-          child: SingleChildScrollView(
-            child: Container(
-              child: Column(
-                children: <Widget>[
-                  CardStats(
-                    title: 'GPU',
-                    array: gpuArray
-                  ),
-                  CardStats(
-                    title: 'CPU',
-                    array: cpuArray
-                  ),
-                  CardStats(
-                    title: 'MEMORY',
-                    array: memoryArray
-                  ),
-                  CardStats(
-                    title: 'FPS',
-                    array: fpsArray
-                  ),
-                ],
+          child: Visibility(
+            visible: !isInfoReady,
+            child: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    CardStats(
+                      title: 'GPU',
+                      array: gpuArray
+                    ),
+                    CardStats(
+                      title: 'CPU',
+                      array: cpuArray
+                    ),
+                    CardStats(
+                      title: 'MEMORY',
+                      array: memoryArray
+                    ),
+                    CardStats(
+                      title: 'FPS',
+                      array: fpsArray
+                    )
+                  ],
+                ),
               ),
             ),
+          replacement: Center(child: CircularProgressIndicator()),
           ),
         ),
       ),
