@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:pc_hardware_monitor/screens/settings.dart';
+import 'package:pc_hardware_monitor/providers/settings_provider.dart';
+import 'package:provider/provider.dart';
 import '../components/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
@@ -22,11 +25,12 @@ class _StatsState extends State<Stats> {
   List<Map<String, dynamic>> memoryArray = [];
   List<Map<String, dynamic>> fpsArray = [];
   bool isInfoReady = true;
+  Timer timer;
 
   @override
   void initState() {
     super.initState();
-    Timer.periodic(new Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(new Duration(seconds: 1), (timer) {
       fectch();
     });
   }
@@ -116,15 +120,31 @@ class _StatsState extends State<Stats> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
+          title: IconButton(
               icon: Icon(
-                Icons.exit_to_app,
+                Icons.arrow_back,
                 color: Theme.of(context).accentColor,
                 size: 34,
               ),
               onPressed: () => {
+                timer.cancel(),
                 Navigator.of(context).pop()
+              },
+            ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: Theme.of(context).accentColor,
+                size: 34,
+              ),
+              onPressed: () => {
+                Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => Settings(),
+                      ),
+                    )
+
               },
             )
           ],
@@ -138,21 +158,33 @@ class _StatsState extends State<Stats> {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    CardStats(
-                      title: 'GPU',
-                      array: gpuArray
+                    Visibility(
+                      visible: Provider.of<SettingsProvider>(context).isGpuChecked,
+                      child: CardStats(
+                        title: 'GPU',
+                        array: gpuArray
+                      ),
                     ),
-                    CardStats(
-                      title: 'CPU',
-                      array: cpuArray
+                    Visibility(
+                      visible: Provider.of<SettingsProvider>(context).isCpuChecked,
+                      child: CardStats(
+                        title: 'CPU',
+                        array: cpuArray
+                      ),
                     ),
-                    CardStats(
-                      title: 'MEMORY',
-                      array: memoryArray
+                    Visibility(
+                      visible: Provider.of<SettingsProvider>(context).isMemoryChecked,
+                      child: CardStats(
+                        title: 'MEMORY',
+                        array: memoryArray
+                      ),
                     ),
-                    CardStats(
-                      title: 'FPS',
-                      array: fpsArray
+                    Visibility(
+                      visible: Provider.of<SettingsProvider>(context).isFpsChecked,
+                      child: CardStats(
+                        title: 'FPS',
+                        array: fpsArray
+                      ),
                     )
                   ],
                 ),

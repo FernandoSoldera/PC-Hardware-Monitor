@@ -28,6 +28,7 @@ dependencies:
   xml:
   xml2json: ^4.3.0
   flutter_launcher_icons: ^0.7.2
+  provider: ^4.3.2
 
 flutter_icons:
   android: true
