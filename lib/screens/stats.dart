@@ -144,7 +144,6 @@ class _StatsState extends State<Stats> {
                         builder: (ctx) => Settings(),
                       ),
                     )
-
               },
             )
           ],
